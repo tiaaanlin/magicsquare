@@ -8,14 +8,23 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-public class View extends JFrame{
+public class View extends JFrame implements ModelView{
 private int row;
 private JButton button[][];
 	public View() {
+
+
+
 		 Object result = JOptionPane.showInputDialog(this, "Enter the number of row:");
 		 String s = (String)result;
 		 int i=Integer.parseInt(s); 
 		 this.row = i;
+
+		Model model = new Model();
+		model.addView(this);
+		model.setRow(i);
+		model.createModel();
+		Controller con = new Controller(model,this);
 		 
 		 this.button = new JButton[row][row];
 		 Container pane = getContentPane();
@@ -26,6 +35,9 @@ private JButton button[][];
 				 this.button[j][a] = new JButton();
 				 this.button[j][a].setPreferredSize(new Dimension(100, 100));
 				 pane.add(button[j][a]);
+				 this.button[j][a].addActionListener(con);
+				 this.button[j][a].setActionCommand(j+" "+a);
+
 			 }
 			 
 		 }
@@ -84,5 +96,23 @@ private JButton button[][];
 	    	return this.button;
 	    }
 	    
-	
+	public void handleUpdate(viewEvent e){
+       int i = e.getI();
+       int j = e.getJ();
+       int num = e.getNum();
+       Model m = (Model)e.getSource();
+       this.getButton()[i][j].setText(String.valueOf(num));
+       if(m.getStatus() == Model.Status.WIN){
+		   JOptionPane.showMessageDialog(this, "You Win");
+	   }
+       else if(m.getStatus() == Model.Status.LOSE){
+		   JOptionPane.showMessageDialog(this, "You Lose");
+		   popQuestion();
+
+	   }
+       else
+       	return;
+
+
+	}
 }

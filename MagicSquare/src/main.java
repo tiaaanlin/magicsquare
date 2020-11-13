@@ -5,7 +5,7 @@ public class main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Controller con = new Controller();
+		View view = new View();
 		
 	}
 	

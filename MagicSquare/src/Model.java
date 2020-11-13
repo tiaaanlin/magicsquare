@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Model {
 	
@@ -13,8 +16,20 @@ public class Model {
  private int sumadj2;
  private boolean isfull= false;
  
- 
- 
+ private List<View> viewlist;
+ public  enum Status { WIN,LOSE,NOEND};
+ private Status status;
+
+ public Model(){
+ 	viewlist = new ArrayList<View>();
+ }
+ public void addView(View view){
+ 	viewlist.add(view);
+
+ }
+ public void removeView(View view){
+ 	viewlist.remove(view);
+ }
  public void setRow(int num) {
 	 this.row = num;
  }
@@ -27,12 +42,37 @@ public class Model {
 		 }
 	 }
  }
- public void setNum(int i,int j,int num){
+
+	private Square[][] getBoard() {
+		return board;
+	}
+
+	public void setNum(int i, int j, int num){
 	 if((num > (row*row)) ||(num < 1))
-     System.out.print("Please enter number from 1 to "+ (row*row));
-	 else
-	 this.board[i][j].setNum(num);
+	 { System.out.print("Please enter number from 1 to "+ (row*row));
+	 for(View view : viewlist){
+		 view.popInvalidInput();
+	 }
+	 }
+	 else {
+		 this.board[i][j].setNum(num);
+		 checkStatus();
+		 for (View view : viewlist) {
+			 view.handleUpdate(new viewEvent(this, i, j, num));
+		 }
+	 }
 	 
+ }
+ public void checkStatus(){
+ 	if (isFull()&& checkwin())
+ 		this.status = Status.WIN;
+ 	else if (isFull()&&!checkwin())
+ 		this.status = Status.LOSE;
+ 	else
+ 		this.status = Status.NOEND;
+ }
+ public Status getStatus(){
+ 	return this.status;
  }
  public boolean checkwin() {
 	 sumrow = new int[row];
@@ -95,6 +135,7 @@ public class Model {
  public void empty() {
 	 this.createModel();
  }
+
  
  }
 
